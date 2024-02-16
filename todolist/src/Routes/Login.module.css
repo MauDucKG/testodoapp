@@ -1,0 +1,43 @@
+.app {
+    display: flex;
+    justify-content: space-between;
+    height:100%;
+}
+
+.body {
+    flex: 1;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    background:white;
+}
+.logo {
+    position:relative;
+    top: 22.5vh;
+    left: 7.73vw;
+    width: 32vw;
+    height: 32.65vh;
+}
+
+.form {
+    position: relative;
+    width: 50%;
+    height: 100%;
+    display:flex;
+    justify-content:center;
+    background: transparent linear-gradient(180deg, #8556A4 0%, #2D2B52 100%) 0% 0% no-repeat padding-box;
+}
+.man {
+    position: fixed;
+    right:50vw;
+    bottom:1px;
+    width: 28vw;
+    height: 39.7vh;
+}
+.woman {
+    position: fixed;
+    bottom:1px;
+    left: 0;
+    width: 10.3vw;
+    height: 36.3vh;
+}
