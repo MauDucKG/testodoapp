@@ -14,7 +14,7 @@ function ToDo({ status, updatedTasks, tasks, cancelTask,draggedTask,searchTerm }
     useEffect(() => {
         if (searchTerm) {
             const filtered = tasks.filter(task =>
-                task.title.toLowerCase().includes(searchTerm.toLowerCase())
+                task.title.toLowerCase().includes(searchTerm.toLowerCase())||task.category.toLowerCase().includes(searchTerm.toLowerCase())
             );
             setFilteredTasks(filtered);
         } else {

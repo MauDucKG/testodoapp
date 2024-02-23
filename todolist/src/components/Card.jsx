@@ -230,7 +230,7 @@ export default function CustomCard({ currTask, handleEditTask, selectedTask, upd
                     </Grid>
                 </CardContent>
                 <button onClick={() => {
-                    const { id, ...taskWithoutId } = task;
+                    const { taskId, ...taskWithoutId } = task;
                     if (isNew) {
                         axios.post('https://localhost:7260/api/ToDoList', taskWithoutId, {
                             headers: {
