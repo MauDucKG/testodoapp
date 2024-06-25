@@ -9,7 +9,7 @@ namespace ToDoList_API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [AllowAnonymous]
     public class ToDoListController : Controller
     {
         private readonly ToDoListApiDbContext dbContext;
@@ -22,7 +22,7 @@ namespace ToDoList_API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetToDoLists([FromQuery]string? filterOn, [FromQuery] string? filterText)
         {
-            if(filterOn is not null && filterText is not null)
+            -   if(filterOn is not null && filterText is not null)
             {
                 if(filterOn.Equals("status",StringComparison.OrdinalIgnoreCase))
                 {
@@ -49,46 +49,77 @@ namespace ToDoList_API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddToDoList(AddToDoListRequest request)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var utcDueDate = request.DueDate.ToUniversalTime(); // Chuyển đổi DueDate sang UTC
+
+                var ToDoList = new ToDoList()
+                {
+                    ID = Guid.NewGuid(),
+                    Category = request.Category,
+                    DueDate = utcDueDate, // Sử dụng DueDate đã chuyển đổi sang UTC
+                    EstimatedTime = request.EstimatedTime,
+                    Priority = request.Priority,
+                    Status = request.Status,
+                    Title = request.Title,
+                    UserID = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))
+                };
+
+                await dbContext.ToDoLists.AddAsync(ToDoList);
+                await dbContext.SaveChangesAsync();
+
+                return Ok(ToDoList);
             }
-            var ToDoList = new ToDoList()
+            catch (Exception ex)
             {
-                ID = Guid.NewGuid(),
-                Category = request.Category,
-                DueDate = request.DueDate,
-                EstimatedTime = request.EstimatedTime,
-                Priority = request.Priority,
-                Status = request.Status,
-                Title = request.Title,
-                UserID = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))
-            };
-            await dbContext.ToDoLists.AddAsync(ToDoList);
-            await dbContext.SaveChangesAsync();
-            return Ok(ToDoList);
+                // Log lỗi hoặc xử lý lỗi
+                return StatusCode(StatusCodes.Status500InternalServerError, "Đã xảy ra lỗi trong quá trình xử lý yêu cầu của bạn.");
+            }
         }
+
+
         [HttpPut]
         [Route("{id:guid}")]
         public async Task<IActionResult> UpdateToDoList([FromRoute] Guid id, UpdateToDoListRequest request)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var todolist = await dbContext.ToDoLists.FindAsync(id);
+                if (todolist == null)
+                {
+                    return NotFound();
+                }
+
+                // Update properties
+                todolist.DueDate = request.DueDate.ToUniversalTime(); // Chuyển đổi DueDate sang UTC
+                todolist.Category = request.Category;
+                todolist.EstimatedTime = request.EstimatedTime;
+                todolist.Priority = request.Priority;
+                todolist.Title = request.Title;
+                todolist.Status = request.Status;
+                todolist.UserID = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+                await dbContext.SaveChangesAsync();
+
+                return Ok(todolist);
             }
-            var todolist = await dbContext.ToDoLists.FindAsync(id);
-            if (todolist == null)
-                return NotFound();
-            todolist.DueDate = request.DueDate;
-            todolist.Category = request.Category;
-            todolist.EstimatedTime = request.EstimatedTime;
-            todolist.Priority = request.Priority;
-            todolist.Title = request.Title;
-            todolist.Status = request.Status;
-            todolist.UserID = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            await dbContext.SaveChangesAsync();
-            return Ok(todolist);
+            catch (Exception ex)
+            {
+                // Log lỗi hoặc xử lý lỗi
+                return StatusCode(StatusCodes.Status500InternalServerError, "Đã xảy ra lỗi trong quá trình xử lý yêu cầu của bạn.");
+            }
         }
+
 
         private Guid GetUserID()
         {

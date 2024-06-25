@@ -22,11 +22,7 @@ function Login() {
     }, []);
     return (
         <div className={classes.app} >
-            <div className={ classes.body} >
-                <img className={classes.logo} src={logo} alt="logo" />
-                <img className={classes.woman} src={woman} alt="woman" />
-                <img className={classes.man} src={man} alt="man" />
-            </div>
+            
             <div className={classes.form}>
                 <LoginForm />
             </div>

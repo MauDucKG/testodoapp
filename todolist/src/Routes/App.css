@@ -45,12 +45,3 @@ body {
   margin: 0;
   color: #e6ddf9;
 }
-.infoDiv{
-}
-    .infoDiv button {
-        height: 30px;
-        width: 30px;
-        position: fixed;
-        right: 2rem;
-        top: 1vh;
-    }
